@@ -45,7 +45,7 @@ int main()
 
 大模拟真**
 
-#### 实例代码（自己写的20分，寄）
+#### 实例代码（自己写的70分，知足了）
 
 ```C++
 #include <bits/stdc++.h>
@@ -112,8 +112,8 @@ int main(){
 			}
 		}
 		if (cnt == -1) {
+			cnt = re_Name.size();
 			re_Name.push_back(name); 	// 关联的角色名称 
-			cnt = i;
 		}
 		
 		int ns;
@@ -194,7 +194,7 @@ int main(){
 		string Op_name;
 		cin >> Op_name;
 		
-		int flag1 = 0, flag2 = 0, flag3 = 0;
+		int right = 0;
 		
 		for (int j = 0; j < op_len; j ++ ) {
 			string object = cur_op[j];
@@ -205,31 +205,27 @@ int main(){
 					break;
 				}
 			}
-			if (flag1 == 0) {
-				for (int k = 0; k < Operation[pos].size(); k ++ ) {
-					if (Operation[pos][k] == wait_Op || Operation[pos][k] == "*") {
-						flag1 = 1;
-						break;
-					}
-				}
-			}
-			if (flag2 == 0) {
-				for (int k = 0; k < Resource_type[pos].size(); k ++ ) {
-					if (Resource_type[pos][k] == Op_type || Resource_type[pos][k] == "*") {
-						flag2 = 1;
-						break;
-					}
-				}
-			}
-			if (flag3 == 0) {
-				if (Resource_name[pos].size() == 0) {
-					flag3 = 1;
-				}
-				else {
-					for (int k = 0; k < Resource_name[pos].size(); k ++ ) {
-						if (Resource_name[pos][k] == Op_name) {
-							flag3 = 1;
-							break;
+			
+			for (int k = 0; k < Operation[pos].size(); k ++ ) {
+				if (Operation[pos][k] == wait_Op || Operation[pos][k] == "*") {
+					for (int r = 0; r < Resource_type[pos].size(); r ++ ) {
+						if (Resource_type[pos][r] == Op_type || Resource_type[pos][r] == "*") {
+							if (Resource_name[pos].size() == 0) {
+								if (right == 0) {
+									cout << "1" << endl;
+									right = 1;
+								}
+							}
+							else {
+								for (int e = 0; e < Resource_name[pos].size(); e ++ ) {
+									if (Resource_name[pos][e] == Op_name) {
+										if (right == 0) {
+											cout << "1" << endl;
+											right = 1;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -237,16 +233,11 @@ int main(){
 		}
 		
 		cur_op.clear();
-		if (flag1 && flag2 && flag3) {
-			cout << "1" << endl;
-		}
-		else {
+		if (right == 0)
 			cout << "0" << endl;
-		}
+		right = 0;		
 	}
-	
 	return 0;
-	
 }
 
 ```
