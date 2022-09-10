@@ -40,3 +40,213 @@ int main()
 	return 0;
 }
 ```
+
+### T3.角色授权
+
+大模拟真**
+
+#### 实例代码（自己写的20分，寄）
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 5010;
+const int M = 510;
+
+int n, m, q;
+
+vector<string> Name;
+vector<vector<string>> Operation(M);
+vector<vector<string>> Resource_type(M);
+vector<vector<string>> Resource_name(M);
+
+unordered_map<string, string> relate;
+
+vector<string> re_Name;
+vector<vector<pair<string, int>>> re_union(M);
+
+vector<string> User;
+vector<vector<string>> q_User(N);
+
+vector<string> cur_op;
+
+int main(){
+	cin >> n >> m >> q;
+	for (int i = 0; i < n; i ++ ) {
+		string name;
+		cin >> name;
+		Name.push_back(name);
+		int nv;
+		cin >> nv;
+		for (int j = 0; j < nv; j ++ ) {
+			// 操作数
+			string Op;
+			cin >> Op;
+			Operation[i].push_back(Op); 	
+		}
+		int no;
+		cin >> no;
+		for (int j = 0; j < no; j ++ ) {
+			string Re_type;
+			cin >> Re_type;
+			Resource_type[i].push_back(Re_type);
+		}
+		int nn;
+		cin >> nn;
+		for (int j = 0; j < nn; j ++ ) {
+			string Re_name;
+			cin >> Re_name;
+			Resource_name[i].push_back(Re_name);
+		}
+	}
+	
+	for (int i = 0; i < m; i ++ ) {
+		int cnt = -1;
+		string name;
+		cin >> name;
+		for (int j = 0; j < re_Name.size(); j ++ ) {
+			if (re_Name[j] == name) {
+				cnt = j;
+				break;
+			}
+		}
+		if (cnt == -1) {
+			re_Name.push_back(name); 	// 关联的角色名称 
+			cnt = i;
+		}
+		
+		int ns;
+		cin >> ns;
+		for (int j = 0; j < ns; j ++ ) {
+			string Op1, Op2;
+			cin >> Op1 >> Op2;
+			if (Op1 == "u") {
+				re_union[cnt].push_back({Op2, 1});
+			}
+			else {
+				re_union[cnt].push_back({Op2, 2});
+			}
+		} 
+	}
+	
+	/*
+	for (int i = 0; i < 5; i ++ ) {
+		cout << "第" << i << endl;
+		for (int j = 0; j < re_union[i].size(); j ++ ) {
+			auto t = re_union[i][j];
+			cout << t.first << " " << t.second << endl;
+			//cout << re_union[i][j] << "  ";
+		}
+		cout << endl;
+	} 
+	*/
+	
+	for (int i = 0; i < q; i ++ ) {
+		string User_name;
+		cin >> User_name;
+		User.push_back(User_name);
+
+		int ng;
+		cin >> ng;
+		for (int j = 0; j < ng; j ++ ) {
+			string q_name;
+			cin >> q_name;
+			q_User[i].push_back(q_name);	//关联的组 
+		} 
+		
+		cur_op.clear();
+		// 添加对象 
+		for (int j = 0; j < m; j ++ ) {
+			for (int k = 0; k < re_union[j].size(); k ++ ) {
+				auto t = re_union[j][k];
+				string temp = t.first;
+				int ty = t.second;
+				if (ty == 1 && temp == User_name) {
+					cur_op.push_back(re_Name[j]);
+					break;
+				}
+				else if (ty == 2) {
+					for (int p = 0; p < q_User[i].size(); p ++ ) {
+						if (temp == q_User[i][p]) {
+							cur_op.push_back(re_Name[j]);
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		int op_len = cur_op.size();
+		/*
+		for (int k = 0; k < op_len; k ++ ) {
+			cout << cur_op[k] << " ";
+		}
+		cout << endl << endl;
+		*/
+		
+		string wait_Op;
+		cin >> wait_Op;
+		
+		string Op_type;
+		cin >> Op_type;
+		
+		string Op_name;
+		cin >> Op_name;
+		
+		int flag1 = 0, flag2 = 0, flag3 = 0;
+		
+		for (int j = 0; j < op_len; j ++ ) {
+			string object = cur_op[j];
+			int pos = 0;
+			for (int k = 0; k < Name.size(); k ++ ) {
+				if (Name[k] == object) {
+					pos = k;
+					break;
+				}
+			}
+			if (flag1 == 0) {
+				for (int k = 0; k < Operation[pos].size(); k ++ ) {
+					if (Operation[pos][k] == wait_Op || Operation[pos][k] == "*") {
+						flag1 = 1;
+						break;
+					}
+				}
+			}
+			if (flag2 == 0) {
+				for (int k = 0; k < Resource_type[pos].size(); k ++ ) {
+					if (Resource_type[pos][k] == Op_type || Resource_type[pos][k] == "*") {
+						flag2 = 1;
+						break;
+					}
+				}
+			}
+			if (flag3 == 0) {
+				if (Resource_name[pos].size() == 0) {
+					flag3 = 1;
+				}
+				else {
+					for (int k = 0; k < Resource_name[pos].size(); k ++ ) {
+						if (Resource_name[pos][k] == Op_name) {
+							flag3 = 1;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		cur_op.clear();
+		if (flag1 && flag2 && flag3) {
+			cout << "1" << endl;
+		}
+		else {
+			cout << "0" << endl;
+		}
+	}
+	
+	return 0;
+	
+}
+
+```
