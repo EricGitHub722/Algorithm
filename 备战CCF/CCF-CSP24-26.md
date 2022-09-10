@@ -240,4 +240,24 @@ int main(){
 	return 0;
 }
 
+/*
+以下为70分样例
+2 4 5
+op 1 open 1 door 0
+ap 1 close 1 gate 0
+op 1 g sre
+op 1 u xiaop
+op 2 g aaa u vvv
+ap 1 g ggg
+xiaoc 2 sre ops open door room302
+xiaop 1 ops open door room501
+xiaoc 2 sre ops remove door room302
+xiaoa 2 aaa ggg close gate room1
+xiaoa 2 aaa ggg close door room1
+*/
+
+
+
+
+
 ```
