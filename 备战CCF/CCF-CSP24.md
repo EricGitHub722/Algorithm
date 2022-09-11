@@ -172,3 +172,107 @@ int main() {
 	return 0;
 }
 ```
+
+### T4.磁盘文件操作
+
+#### 先附上垃圾代码
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 2010;
+const int M = 10010;
+//n,k<=2000;m<=10000
+
+int n, m, k;
+
+vector<int> sp(M);
+vector<int> cqr(M);
+vector<int> l_cqr(M);
+
+int main() {
+	cin >> n >> m >> k;
+	for (int i = 0; i < k; i ++ ) {
+		int x;
+		cin >> x;
+		if (x == 0) {
+			int id, l, r, x;
+			int flag = 1;
+			cin >> id >> l >> r >> x;
+			for (int j = l; j <= r; j ++ ) {
+				if (cqr[j] == 0) {
+					sp[j] = x;
+					cqr[j] = id;
+				}
+				else if (cqr[j] == id) {
+					sp[j] = x;
+				}
+				else if (cqr[j] != id) {
+					if (j == l) {
+						cout << "-1" << endl;
+					}
+					else {
+						cout << j-1 << endl;
+					}
+					flag = 0;
+					break;
+				}
+			}
+			if (flag == 1) {
+				cout << r << endl;
+			}
+		}
+		else if (x == 1) {
+			int id, l, r;
+			cin >> id >> l >> r;
+			int flag = 1;
+			for (int j = l; j <= r; j ++ ) {
+				if (cqr[j] != id) {
+					cout << "FAIL" << endl;
+					flag = 0;
+					break;
+				}
+			}
+			if (flag) {
+				for (int j = l; j <= r; j ++ ) {
+					l_cqr[j] = cqr[j];
+					cqr[j] = 0;
+				}
+				cout << "OK" << endl;
+			}
+		}
+		else if (x == 2) {
+			int id, l, r;
+			cin >> id >> l >> r;
+			int flag = 1;
+			for (int j = l; j <= r; j ++ ) {
+				if (cqr[j] != 0 || l_cqr[j] != id) {
+					cout << "FAIL" << endl;
+					flag = 0;
+					break;
+				}
+			}
+			if (flag) {
+				for (int j = l; j <= r; j ++ ) {
+					cqr[j] = id;
+				}
+				cout << "OK" << endl;
+			}
+		}
+		else {
+			int p;
+			cin >> p;
+			if (cqr[p] != 0) {
+				cout << cqr[p] << " " << sp[p] << endl;
+			}
+			else {
+				cout << "0 0" << endl;
+			}
+		}
+	}
+	return 0;
+}
+```
+
+
+
