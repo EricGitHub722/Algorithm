@@ -175,7 +175,7 @@ int main() {
 
 ### T4.磁盘文件操作
 
-#### 先附上垃圾代码
+#### 先附上25分垃圾代码
 ```C++
 #include <bits/stdc++.h>
 using namespace std;
