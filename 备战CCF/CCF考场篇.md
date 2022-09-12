@@ -265,10 +265,9 @@ int query(char s[])     // 查询
 2. BFS
 3. 拓扑排序
 4. Dijkstra
-5. Bellman-Fold
-6. SPFA
-7. Floyd
-8. Prim
+5. SPFA
+6. Floyd
+7. Prim
 9. Kruskal
 10. 染色法判定二分图
 11. 匈牙利算法
@@ -410,7 +409,7 @@ void topsort()
             cout << res[i] << " ";
         cout << endl;
     }
-    else
+    else    // 路径不可达
     {
         cout << "-1" << endl;
     }
@@ -436,6 +435,8 @@ int main()
 ```
 
 #### Dijkstra
+
+属于贪心算法的一种
 
 ```C++
 #include <bits/stdc++.h>
@@ -480,7 +481,7 @@ int dijkstra()
             }
         }
     }
-    if (dis[n] != 0x3f3f3f3f)   return dis[n];
+    if (dis[n] != 0x3f3f3f3f)   return dis[n];  // 路径可达
     return -1;
 }
 
@@ -501,59 +502,16 @@ int main()
 }
 ```
 
-#### Bellman-Fold(*)
+#### SPFA
+
+改良版的Bellman-Fold算法
+
+与Dijkstra相比的优点：可以判断带负权值的图是否可达
+
+“这一算法被认为在随机的稀疏图上表现出色，并且极其适合带有负边权的图。然而SPFA在最坏情况的时间复杂度与Bellman-Ford算法相同，因此在非负边权的图中仍然最好使用Dijkstra。”
 
 ```C++
-#include <iostream>
-#include <cstring>
-using namespace std;
-
-const int N = 100010;
-//准备原距离和备份距离
-int n, m, k, dis[N], cpy[N];
-**//该算法效率不高, 使用结构体存储边**
-struct Edge{
-    int a, b, c;
-}s[N];
-
-int main()
-{
-    cin >> n >> m >> k;
-    for (int i = 0; i < m; i ++ )
-    {
-        int a, b, c;
-        cin >> a >> b >> c;
-        s[i] = {a, b, c};
-    }
-    memset(dis, 0x3f3f3f3f, sizeof dis);
-    dis[1] = 0;
-    //循环k次
-    for (int i = 0; i < k; i ++ )
-    {
-        //在每次更新前先将原来状况复制
-        memcpy(cpy, dis, sizeof dis);
-        for (int j = 0; j < m; j ++ )
-        {
-            int x = s[j].a, y = s[j].b, l = s[j].c;
-            //确保更新时候无串联情况, 想象成BFS即可, 一层一层往外蔓延, 只不过是k次蔓延
-            dis[y] = min(dis[y], cpy[x] + l);
-        }
-    }
-    //可能该点在改变后数字不是准确的0x3f3f3f3f, 故只需保持一样的数量级即可
-    if (dis[n] > 0x3f3f3f3f / 2)    puts("impossible");
-    else    cout << dis[n] << endl;
-    
-    return 0;
-}
-```
-
-#### SPFA(*)
-
-可以判断带负权值的图是否可达
-```C++
-#include <iostream>
-#include <cstring>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
 const int N = 100010;
@@ -614,6 +572,8 @@ int main()
 
 #### Floyd(*)
 
+
+
 ```C++
 #include <iostream>
 using namespace std;
@@ -657,47 +617,85 @@ int main()
 }
 ```
 
-#### Prim(*)
+#### Prim
+
+prim 算法干的事情是：给定一个无向图，在图中选择若干条边把图的所有节点连起来。要求边长之和最小。在图论中，叫做求**最小生成树**。
+
+prim 算法采用的是一种贪心的策略。
+
+prim适合用于求**稠密图**的最小生成树
+
+复杂度为O(n2)
 
 ```C++
-#include <iostream>
-#include <cstring>
-#include <algorithm>
+//2022.6.1 更新
+
+#include <bits/stdc++.h>
 using namespace std;
 
 const int N = 510;
+int g[N][N];//存储图
+int dt[N];//存储各个节点到生成树的距离
+int st[N];//节点是否被加入到生成树中
+int pre[N];//节点的前去节点
+int n, m;//n 个节点，m 条边
 
-int n, m, s[N][N], dist[N];
-bool st[N];
+void prim()
+{
+    memset(dt,0x3f, sizeof(dt));    //初始化距离数组为一个很大的数（10亿左右）
+    int res= 0; // 所求的生成最小生成树的权重
+    dt[1] = 0;  //从 1 号节点开始生成 
+    for(int i = 0; i < n; i++)  //每次循环选出一个点加入到生成树
+    {
+        int t = -1;
+        for(int j = 1; j <= n; j++)//每个节点一次判断
+        {
+            if(!st[j] && (t == -1 || dt[j] < dt[t]))//如果没有在树中，且到树的距离最短，则选择该点
+                t = j;
+        }
+        if(dt[t] == 0x3f3f3f3f) {
+            cout << "impossible";
+            return;
+        }
+
+        st[t] = 1;// 选择该点
+        res += dt[t];
+        for(int i = 1; i <= n; i++)//更新生成树外的点到生成树的距离
+        {
+            if(dt[i] > g[t][i] && !st[i])//从 t 到节点 i 的距离小于原来距离，则更新。
+            {
+                dt[i] = g[t][i];//更新距离
+                pre[i] = t;//从 t 到 i 的距离更短，i 的前驱变为 t.
+            }
+        }
+    }
+
+    cout << res;
+
+}
+
+void getPath()//输出各个边
+{
+    for(int i = n; i > 1; i--)//n 个节点，所以有 n-1 条边。
+
+    {
+        cout << i <<" " << pre[i] << " "<< endl;// i 是节点编号，pre[i] 是 i 节点的前驱节点。他们构成一条边。
+    }
+}
 
 int main()
 {
-    cin >> n >> m;
-    memset(s, 0x3f, sizeof s);
-    while (m -- )
+    memset(g, 0x3f, sizeof(g));//各个点之间的距离初始化成很大的数
+    cin >> n >> m;//输入节点数和边数
+    while(m --)
     {
-        int a, b, val;
-        cin >> a >> b >> val;
-        s[a][b] = s[b][a] = min(s[a][b], val);
+        int a, b, w;
+        cin >> a >> b >> w;//输出边的两个顶点和权重
+        g[a][b] = g[b][a] = min(g[a][b],w);//存储权重
     }
-    memset(dist, 0x3f, sizeof dist);
-    int res = 0;
-    for (int i = 0; i < n; i ++ )
-    {
-        int t = -1;
-        for (int j = 1; j <= n; j ++ )
-            if (!st[j] && (t == -1 || dist[t] > dist[j]))
-                t = j;
-        if (i && dist[t] == 0x3f3f3f3f)
-        {
-            puts("impossible");
-            return 0;
-        }
-        if (i)  res += dist[t];
-        st[t] = true;
-        for (int j = 1; j <= n; j ++ )  dist[j] = min(dist[j], s[t][j]);
-    }
-    cout << res << endl;
+
+    prim();//求最下生成树
+    //getPath();//输出路径
     return 0;
 }
 ```
