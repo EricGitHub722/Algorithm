@@ -1140,8 +1140,6 @@ int main()
 6. 数位DP
 
 
-
-
 ### 线性DP
 
 #### 最长上升子序列
@@ -1161,7 +1159,7 @@ for (int i = 1; i <= n; i ++ )
 }
 
 //上述代码存在的问题：时间复杂度过高（O(n2)），当数据范围到10^5的时候会产生TLE
-//优化策略:使用降低代码的复杂度，时间复杂度为O(nlogn)
+//优化策略:降低代码的复杂度，时间复杂度为O(nlogn)
 //将固定长度的子序列的最后一个最小值保存即可，使得严格保证re[0]<re[1]<re[2]<...<re[n];
 //使用二分法返回小于当前值的最小的子序列最后一位值
 for (int i = 0; i < n; i ++ )  
@@ -1170,6 +1168,7 @@ int len = 0;
 re[0] = -2e9;	//re[i]即代表长度为i的最长子序列
 for (int i = 0; i < n; i ++ )
 {
+    // 此处的二分是对re数组二分
     int l = 0, r = len;
     while (l < r)
     {
@@ -1205,6 +1204,37 @@ cout << f[n][m];
 ### 区间DP
 
 #### 石子合并
+
+输出合并最小代价的方法
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 310;
+// f[i][j]:将i到j这一段石子合并所需的最小代价
+int a[N], s[N], f[N][N];
+
+int main()
+{
+    int n;
+    cin >> n;
+    for (int i = 1; i <= n; i ++ )  cin >> a[i], s[i] = s[i - 1] + a[i];
+    
+    memset(f, 0x3f, sizeof f);
+    for (int i = 1; i <= n; i ++ )  f[i][i] = 0;
+    
+    for (int length = 2; length <= n; length ++ )   // 区间长度
+        for (int i = 1; i + length - 1 <= n; i ++ ) // 枚举起点
+        {
+            int j = i + length - 1; //区间终点
+            for (int k = i; k <= j; k ++ )  // 枚举分割点，构造状态转移方程
+                f[i][j] = min(f[i][j], f[i][k] + f[k + 1][j] + s[j] - s[i - 1]);
+        }
+    cout << f[1][n] << endl;
+    return 0;
+}
+```
 
 
 ### 状态机模型
