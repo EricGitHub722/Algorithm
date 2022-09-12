@@ -948,6 +948,8 @@ for (int i = 0; i < n; i ++ )
 
 ### 多重背包问题|||(*)
 
+多重背包的单调队列优化方法。
+
 
 ### 分组背包问题
 
@@ -966,7 +968,6 @@ for(int i=1;i<=n;i++){
     }
 }
 
-
 //一维优化
 for (int i = 0; i < n; i ++ )
 {
@@ -981,9 +982,165 @@ for (int i = 0; i < n; i ++ )
 ```
 
 ### 有依赖的背包问题
+
+题目特征：物品之间具有依赖关系，且依赖关系组成一棵树的形状。如果选择一个物品，则必须选择它的父节点。
+
+求可以取出的最大价值
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 110;
+int n, m;
+int h[N], e[N], ne[N], idx;
+int f[N][N];
+int w[N], v[N], root;
+
+void add(int a, int b)
+{
+    e[idx] = b, ne[idx] = h[a], h[a] = idx ++ ;
+}
+
+void dfs(int u)
+{
+    for (int i = h[u]; i != -1; i = ne[i])
+    {
+        // 遍历儿子节点
+        int son = e[i];
+        dfs(son);
+        
+        for (int j = m - v[u]; j >= 0; j -- )
+        //遍历背包的容积，因为我们是要遍历其子节点，所以当前节点我们是默认选择的。
+        //这个时候当前结点我们看成是分组背包中的一个组，子节点的每一种选择我们都看作是组内一种物品，所以是从大到小遍历。
+        //我们每一次都默认选择当前结点，因为到最后根节点是必选的。
+            for (int k = 0; k <= j; k ++ )
+                //去遍历子节点的组合 
+                f[u][j] = max(f[u][j], f[u][j - k] + f[son][k]);
+    }
+    //加上刚刚默认选择的父节点价值
+    for (int j = m; j >= v[u]; j -- )   f[u][j] = f[u][j - v[u]] + w[u];
+    //因为我们是从叶子结点开始往上做，所以如果背包容积不如当前物品的体积大，那就不能选择当前结点及其子节点，因此赋值为零
+    for (int j = 0; j < v[u]; j ++ )    f[u][j] = 0;
+}
+
+int main()
+{
+    cin >> n >> m;
+    memset(h, -1, sizeof h);
+    // 物品的下标范围是1-n
+    for (int i = 1; i <= n; i ++ )
+    {
+        int c;
+        // 每个物品的体积，价值和依赖的物品编号
+        cin >> v[i] >> w[i] >> c;
+        if (c == -1)    root = i;
+        else add(c, i);
+    }
+    dfs(root);
+    cout << f[root][m] << endl;
+    return 0;
+}
+```
+
 ### 背包问题求方案数
+
+通过01背包问题，求解出**最优选法的方案数**
+
+注意：有可能方案数会很大，因此需要对答案进行取模
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1010, mod = 1e9 + 7;
+int w[N], v[N], f[N], g[N];
+
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= n; i ++ )  cin >> v[i] >> w[i];
+    f[0] = 0;
+    g[0] = 1;
+    for (int i = 1; i <= n; i ++ )
+        for (int j = m; j >= v[i]; j -- )
+        {
+            int cnt = 0, maxn = 0;
+            maxn = max(f[j], f[j - v[i]] + w[i]);
+            if (maxn == f[j - v[i]] + w[i]) cnt += g[j - v[i]];
+            if (maxn == f[j]) cnt += g[j];
+            g[j] = cnt % mod;
+            f[j] = maxn;
+        }
+    int maxn = 0;
+    for (int i = 0; i <= m; i ++ )  maxn = max(maxn, f[i]);
+    long long cnt = 0;
+    for (int i = 0; i <= m; i ++ )
+        if (f[i] == maxn)   cnt = (cnt + g[i]) % mod;
+    
+    cout << cnt << endl;
+    return 0;
+}
+```
+
 ### 背包问题求具体方案
 
+通过01背包问题，输出**字典序最小的方案**
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1010;
+int s[N], f[N][N], ans[N];
+int w[N], v[N], idx;
+
+int main()
+{
+    
+    int n, m;
+    cin >> n >> m;
+    for (int i = 1; i <= n; i ++ )  cin >> v[i] >> w[i];
+    for (int i = 0; i <= n; i ++ )
+        for (int j = 0; j <= m; j ++ )
+        {
+            f[i][j] = f[i - 1][j];
+            if (j >= v[i])  f[i][j] = max(f[i][j], f[i - 1][j - v[i]] + w[i]);
+        }
+    
+    int maxn = 0;
+    for (int i = 0; i <= m; i ++ )  maxn = max(maxn, f[n][i]);
+    
+    int tag = 0;
+    
+    for (int i = n; i >= 0; i -- )
+        for (int j = 0; i <= m; i ++ )
+            if (maxn == f[i][j])
+            {
+                tag = i;
+                break;
+            }
+    //for (int i = tag; i >= 0; i -- )
+    int i = tag;
+    for (int j = tag; j >= 0; j -- )
+    {
+        for (int k = 0; k <= j; k ++ )
+        {
+            if (f[i][j] == f[i - 1][j - v[k]] + w[k])
+            {
+                ans[idx ++ ] = k;
+                j -= v[k];
+                break;
+            }
+        }
+    }
+    
+    for (int i = 0; i < idx; i ++ ) cout << ans[i] << " ";
+    cout << endl;
+    return 0;
+}
+```
 
 ## 动态规划-其它篇
 
