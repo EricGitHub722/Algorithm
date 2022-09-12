@@ -45,7 +45,7 @@ int main() {
 
 ```
 
-### 资源调度管理器
+### 计算资源调度器
 
 #### 20分代码（寄）
 ```C++
@@ -86,5 +86,113 @@ int main()
     }
  
     return 0;
+}
+```
+
+#### 参考的AC代码如下
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef struct node{
+	int id;
+	int block;
+	int nums;
+	unordered_set<int> task;
+	
+	bool operator < (const node &a)const {
+		if (this->nums != a.nums) {
+			return this->nums < a.nums;
+		}
+		else {
+			return this->id < a.id;
+		}
+	}
+}node; 
+
+unordered_map<int, node> Node;
+
+void func1(int n, vector<int> &temp) {
+	for (auto it = temp.begin(); it != temp.end();) {
+		if (Node[*it].block != n) {
+			temp.erase(it);
+		}
+		else it ++;
+	}
+	return;
+}
+
+void func2(int n, vector<int> &temp) {
+	set<int> qu;
+	for (auto it = Node.begin(); it != Node.end(); it ++ ) {
+		if (it->second.task.count(n) == 1) {
+			qu.insert(it->second.block);
+		}
+	}
+	for (auto it = temp.begin(); it != temp.end(); ) {
+		if (qu.count(Node[*it].block) == 0) {
+			temp.erase(it); 
+		} 
+		else it ++;
+	}
+	return;
+}
+
+vector<int> func3(int n, vector<int> temp) {
+	for (auto it = temp.begin(); it != temp.end(); ) {
+		if (Node[*it].task.count(n) == 1) {
+			temp.erase(it);
+		}
+		else it ++;
+	}
+	return temp;
+}
+
+int main() {
+	int n, m;
+	cin >> n >> m;
+	vector<int> idsum;
+	for (int i = 1; i <= n; i ++ ) {
+		int temp;
+		cin >> temp;
+		Node[i] = node{i, temp, 0, unordered_set<int>()};
+		idsum.push_back(i);
+	}
+	int T;
+	cin >> T;
+	vector<int> temp, temp2;
+	while (T -- ) {
+		int f, a, na, pa, ppa, paar;
+		cin >> f >> a >> na >> pa >> ppa >> paar;
+		while (f -- ) {
+			temp = idsum;
+			temp2.clear();
+			if (na) {
+				func1(na, temp);
+			}
+			if (pa) {
+				func2(pa, temp);
+			}
+			if (ppa) {
+				temp2 = func3(ppa, temp);
+			}
+			if ((temp2.empty() && paar == 1) || temp.empty()) {
+				cout << "0 ";
+				continue;
+			}
+			else if (temp2.empty() && paar == 0) {
+				temp2 = temp;
+			}
+			sort(temp2.begin(),temp2.end(),[](const int &a1, const auto &b1)->bool{
+				return Node[a1] < Node[b1];
+			});
+			Node[temp2[0]].nums ++;
+			Node[temp2[0]].task.insert(a);
+			cout << Node[temp2[0]].id << " ";
+		}
+		cout << endl;
+		
+	}
+	return 0;
 }
 ```
