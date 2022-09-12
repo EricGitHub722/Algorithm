@@ -1061,8 +1061,8 @@ int main()
     int n, m;
     cin >> n >> m;
     for (int i = 1; i <= n; i ++ )  cin >> v[i] >> w[i];
-    f[0] = 0;
-    g[0] = 1;
+    f[0] = 0;   // 价值
+    g[0] = 1;   // 方案数
     for (int i = 1; i <= n; i ++ )
         for (int j = m; j >= v[i]; j -- )
         {
@@ -1089,54 +1089,42 @@ int main()
 通过01背包问题，输出**字典序最小的方案**
 
 ```C++
-#include <bits/stdc++.h>
+#include <iostream>
+
 using namespace std;
 
 const int N = 1010;
-int s[N], f[N][N], ans[N];
-int w[N], v[N], idx;
+
+int n, m;
+int w[N], v[N];
+// f[i][j]表示考虑后i个物品，且当前已使用体积不超过j的方案
+// 其实就是逆序
+int f[N][N];
+int path[N], cnt;
 
 int main()
 {
-    
-    int n, m;
     cin >> n >> m;
-    for (int i = 1; i <= n; i ++ )  cin >> v[i] >> w[i];
-    for (int i = 0; i <= n; i ++ )
-        for (int j = 0; j <= m; j ++ )
-        {
-            f[i][j] = f[i - 1][j];
-            if (j >= v[i])  f[i][j] = max(f[i][j], f[i - 1][j - v[i]] + w[i]);
-        }
-    
-    int maxn = 0;
-    for (int i = 0; i <= m; i ++ )  maxn = max(maxn, f[n][i]);
-    
-    int tag = 0;
-    
-    for (int i = n; i >= 0; i -- )
-        for (int j = 0; i <= m; i ++ )
-            if (maxn == f[i][j])
-            {
-                tag = i;
-                break;
-            }
-    //for (int i = tag; i >= 0; i -- )
-    int i = tag;
-    for (int j = tag; j >= 0; j -- )
+    for (int i = 1; i <= n; ++ i) cin >> v[i] >> w[i];
+    for (int i = n; i >= 1; -- i)
     {
-        for (int k = 0; k <= j; k ++ )
+        for (int j = 0; j <= m; ++ j)
         {
-            if (f[i][j] == f[i - 1][j - v[k]] + w[k])
-            {
-                ans[idx ++ ] = k;
-                j -= v[k];
-                break;
-            }
+            f[i][j] = f[i + 1][j];
+            if (j >= v[i]) f[i][j] = max(f[i][j], f[i + 1][j - v[i]] + w[i]);
         }
     }
-    
-    for (int i = 0; i < idx; i ++ ) cout << ans[i] << " ";
+    for (int i = 1, j = m; i <= n; ++ i)
+    {
+        // 如果第i个物品已经选过，则进行记录
+        if (j >= v[i] && f[i][j] == f[i + 1][j - v[i]] + w[i])
+        {
+            path[cnt ++ ] = i;
+            j -= v[i];
+        }
+    }
+    // 由于背包是逆序的，此时顺序输出即可
+    for (int i = 0; i < cnt; ++ i) cout << path[i] << " ";
     cout << endl;
     return 0;
 }
