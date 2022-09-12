@@ -44,3 +44,47 @@ int main() {
 }
 
 ```
+
+### 资源调度管理器
+
+#### 20分代码（寄）
+```C++
+
+
+#include <iostream>
+#include <vector>
+ 
+using namespace std;
+ 
+int main()
+{
+    int n, m;  // 计算节点的数目和可用区的数目
+    cin>>n>>m;
+ 
+    for (int i = 1; i <= n; ++i) {
+        int li;
+        cin>>li;
+    }
+ 
+    int g;  // 任务的组数
+    cin>>g;
+ 
+    int index = 0;
+    for (int i = 0; i < g; ++i) {
+        int f, a, na, pa, paa, paar;
+        cin>>f>>a>>na>>pa>>paa>>paar;
+ 
+        if (na == 0 && pa == 0 && paa == 0) {  // 不需要满足任何要求时
+            for (int j = 0; j < f; ++j) {
+                index = (index % n) + 1;
+                cout<<index<<" ";
+            }cout<<endl;
+        }
+        else {
+ 
+        }
+    }
+ 
+    return 0;
+}
+```
