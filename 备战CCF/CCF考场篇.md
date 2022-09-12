@@ -1237,10 +1237,62 @@ int main()
 ```
 
 
-### 状态机模型
-### 状态压缩DP
-### 树形DP
-### 数位DP
+### 状态机模型(*)
+
+#### 股票买卖IV(*)
+
+题意
+
+```C++
+
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+const int N = 100010, K = 110;
+/*
+f[i][0] 表示第i天持有股票的最大利润
+f[i][1] 表示第i天不持有股票的最大利润
+f[i][0] = f[i - 1][0];
+f[i][1] = max(f[i - 1][1], f[i - 1][0] + w[i])
+*/
+// f[i][j][k]表示：考虑前i天的股票，第i天的决策是k，且完成的完整交易数为j的方案
+int f[N][K][2];
+int w[N];
+
+int main()
+{
+    // 数组的长度和可以完成的最大交易笔数
+    int n, k;
+    cin >> n >> k;
+    for (int i = 1; i <= n; i ++ )  cin >> w[i];
+    //f[1][1][1] = -w[1];
+    memset(f, -0x3f, sizeof f);
+    for (int i = 0; i <= n; i ++ )  f[i][0][0] = 0;
+    
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= k; j ++ )
+        {
+            f[i][j][1] = max(f[i - 1][j - 1][0] - w[i], f[i - 1][j][1]);
+            f[i][j][0] = max(f[i - 1][j][0], f[i - 1][j][1] + w[i]);
+        }
+    
+    int maxn = 0;
+    for (int i = 0; i <= k; i ++ )  maxn = max(maxn, f[n][i][0]);
+    cout << maxn << endl;
+    
+    //cout << f[n][k][0] << endl;
+    return 0;
+    
+}
+```
+
+### 状态压缩DP(*)
+### 树形DP(*)
+### 数位DP(*)
+
+
 
 
 
