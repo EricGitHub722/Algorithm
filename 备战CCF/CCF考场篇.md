@@ -268,11 +268,7 @@ int query(char s[])     // 查询
 5. SPFA
 6. Floyd
 7. Prim
-9. Kruskal
-10. 染色法判定二分图
-11. 匈牙利算法
-12. 最小生成树
-13. 二分图
+8. Kruskal
 
 #### DFS
 
@@ -570,9 +566,21 @@ int main()
 }
 ```
 
-#### Floyd(*)
+#### Floyd
 
+用途：处理多源最短路径
 
+与Dijkstra算法的区别：
+
+1. Dijkstra不能处理负权图，Flyod能处理负权图
+
+2. Dijkstra处理单源最短路径，Flyod是处理多源最短路径
+
+3. Dijkstra时间复杂度为O（n^2）；Flyod时间复杂度为O(n^3) 空间复杂度为O(n ^ 2)
+
+所以题目中如果是单源点正权图，就用Dijkstra
+
+如果是任意两个点之间的最短路径或者是负权图，就用Floyd；
 
 ```C++
 #include <iostream>
@@ -592,6 +600,7 @@ void floyd()
 
 int main()
 {
+    // 点,边,查询
     cin >> n >> m >> k;
     for (int i = 1; i <= n; i ++ )
         for (int j = 1; j <= n; j ++ )
@@ -700,7 +709,20 @@ int main()
 }
 ```
 
-#### Kruskal(*)
+#### Kruskal
+
+Kruskal 算法干的事情是：给定一个无向图，在图中选择若干条边把图的所有节点连起来。要求边长之和最小。在图论中，叫做求**最小生成树**。。
+
+Kruskal适合用于求**稀疏图**的最小生成树
+
+与Prim的区别：
+
+1. Prim算法是直接查找，多次寻找邻边的权重最小值，而Kruskal是需要先对权重排序后查找的
+
+2. Kruskal在算法效率上是比Prim快的，因为Kruskal只需一次对权重的排序就能找到最小生成树，而Prim算法需要多次对邻边排序才能找到
+
+Kruskal实现过程：Kruskal算法在找最小生成树结点之前，需要对权重从小到大进行排序。将排序好的权重边依次加入到最小生成树中（如果加入时产生回路就跳过这条边，加入下一条边），当所有的结点都加入到最小生成树中后，就找到了这个连通图的最小生成树
+
 
 ```C++
 #include <iostream>
@@ -729,6 +751,7 @@ int find(int x)
 
 int main()
 {
+    // 点和边数
     int n, m;
     cin >> n >> m;
     for (int i = 0; i < n; i ++ )   p[i] = i;
@@ -738,6 +761,7 @@ int main()
         cin >> a >> b >> val;
         edge[i] = {a, b, val};
     }
+    // 排序，以便选出最短边
     sort(edge, edge + m);
     
     int res = 0, cnt = 0;
@@ -747,7 +771,7 @@ int main()
         int y = edge[i].b;
         int fx = find(x);
         int fy = find(y);
-        if (fx != fy)
+        if (fx != fy)   // 不能构成环
         {
             p[fx] = fy;
             cnt ++ ;
@@ -758,8 +782,36 @@ int main()
     else    cout << res << endl;
     return 0; 
 }
-
 ```
+
+### 动态规划-背包篇
+
+1. 01背包问题
+2. 完全背包问题
+3. 多重背包问题
+4. 多重背包问题||
+5. 多重背包问题|||
+6. 分组背包问题
+7. 有依赖的背包问题
+8. 背包问题求方案数
+9. 背包问题求具体方案
+
+
+### 动态规划-其它篇
+
+1. 线性DP
+2. 区间DP
+3. 状态机模型
+4. 状态压缩DP
+5. 树形DP
+6. 数位DP
+
+
+
+
+
+
+
 
 
 
