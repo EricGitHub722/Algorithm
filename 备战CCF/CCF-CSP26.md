@@ -1,5 +1,7 @@
 ## 第26次CCF
 
+累计得分：**285**
+
 ### T1.归一化处理
 
 注意事项，该int时int，该double时double，注意细节
@@ -338,9 +340,134 @@ xiaoc 2 sre ops remove door room302
 xiaoa 2 aaa ggg close gate room1
 xiaoa 2 aaa ggg close door room1
 */
+```
 
+### T4.光线追踪
 
+话不多说，直接暴力，怒拿15分（寄！）
+#### 菜鸡代码
+```C++
+#include <bits/stdc++.h>
+using namespace std;
 
+const int N = 1010;
 
+typedef struct mirror{
+	int qidian_x;
+	int qidian_y;
+	int zhongdian_x;
+	int zhongdian_y;
+	int arc;	// 0--\   1--/
+	double a;
+	int k;
+}mirror;
 
+unordered_map<int, mirror> M;
+int m;
+
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+
+int judge(int x, int y) {
+	for (auto it = M.begin(); it != M.end(); it ++ ) {
+		int tx, ty;
+		int min_x = min(it->second.qidian_x, it->second.zhongdian_x);
+		int max_x = max(it->second.qidian_x, it->second.zhongdian_x);
+		int min_y = min(it->second.qidian_y, it->second.zhongdian_y);
+		int max_y = max(it->second.qidian_y, it->second.zhongdian_y);
+		if (x > min_x && x < max_x && y > min_y && y < max_y) {
+			
+			int x1 = abs(x - it->second.qidian_x);
+			int y1 = abs(y - it->second.qidian_y);
+			int x2 = abs(x - it->second.zhongdian_x);
+			int y2 = abs(y - it->second.zhongdian_y);
+			if (x1 == y1) {
+				if (y2 == x2) {
+					return it->second.k;
+				}
+			}
+		}	
+	}
+	return 0;
+}
+
+int main() {
+	cin >> m;
+	for (int i = 1; i <= m; i ++ ){
+		int t;
+		cin >> t;
+		if (t == 1) {
+			int x1, y1, x2, y2;
+			double a;
+			cin >> x1 >> y1 >> x2 >> y2 >> a;
+			int arc;
+			if (x1 > x2 && y1 > y2) {
+				arc = 1;
+			}
+			else if (x1 > x2 && y1 < y2) {
+				arc = 0;
+			}
+			else if (x1 < x2 && y1 < y2) {
+				arc = 1;
+			}
+			else arc = 0;
+			M[i] = {x1, y1, x2, y2, arc, a, i};
+		}
+		else if (t == 2) {
+			int k;
+			cin >> k;
+			M.erase(k);
+		}
+		else {
+			int x, y, d, t;
+			double I;
+			cin >> x >> y >> d >> I >> t;
+			int flag = 1;
+			while (t -- ) {
+				x = x + dx[d];
+				y = y + dy[d];
+				int j = judge(x, y);
+				if (j != 0) {
+					auto temp = M[j];
+					I = I * temp.a;
+					if (I < 1) {
+						flag = 0;
+						break;
+					}
+					if (d == 0) {
+						if (temp.arc == 0) {
+							d = 3;
+						}
+						else d = 1;
+					}
+					else if (d == 1) {
+						if (temp.arc == 0) {
+							d = 2;
+						}
+						else d = 0;
+					}
+					else if (d == 2) {
+						if (temp.arc == 0) {
+							d = 1;
+						}
+						else d = 3;
+					}
+					else {
+						if (temp.arc == 0) {
+							d = 0;
+						}
+						else d = 2;
+					}
+				}
+			}
+			if (flag) {
+				cout << x << " " << y << " " << (int)I << endl;
+			}
+			else {
+				cout << "0 0 0" << endl;
+			}
+		}
+	}
+	return 0;
+}
 ```
