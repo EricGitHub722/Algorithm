@@ -41,6 +41,89 @@ int main()
 }
 ```
 
+### T2.寻宝 大冒险！
+
+思路：巧用set将当前有树的点都保存起来，先挑选其中一个节点，然后以这个节点为左下角节点，对剩余节点遍历，通过比较和藏宝图中树的数量来判定有没有可能匹配
+
+```C++
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 1010;
+
+vector<vector<int>> M(N, vector<int>(N));
+set<pair<int, int>> P;
+
+int n, l, s;
+int main() {
+	int cnt = 0;
+	cin >> n >> l >> s;
+	for (int i = 0; i < n; i ++ ) {
+		int x, y;
+		cin >> x >> y;
+		P.insert({x, y});
+	}
+	for (int i = s; i >= 0; i -- ) {
+		for (int j = 0; j <= s; j ++ ) {
+			cin >> M[i][j];
+			if (M[i][j] == 1) {
+				cnt ++;
+			}
+		}
+	}
+	int res = 0;
+	for (auto it = P.begin(); it != P.end(); it ++ ) {
+		auto t = *it;
+		int px = t.first;
+		int py = t.second;
+		int temp = 0;
+		int flag = 1;
+		for (auto iit = P.begin(); iit != P.end(); iit ++ ) {
+			auto tt = *iit;
+			int x = tt.first;
+			int y = tt.second;
+			if (x - px >= 0 && x - px <= s && y - py >= 0 && y - py <= s) {
+				temp ++;
+			}
+		}
+		
+		if (temp == cnt) {
+			for (int j = 0; j <= s; j ++ ) {
+				if (flag) {
+					for (int k = 0; k <= s; k ++ ) {
+						if (j + px > l || k + py > l) {
+							flag = 0;
+							break;
+						}
+						if (M[j][k] == 1) {
+							if (P.count({j + px, k + py}) == 0) {
+								flag = 0;
+								break;
+							}
+						}
+						else {
+							if (P.count({j + px, k + py}) == 1) {
+								flag = 0;
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			flag = 0;
+		}
+		if (flag) {
+			res ++;
+		}
+	}
+	cout << res << endl;
+	return 0;
+}
+
+```
+
 ### T3.角色授权
 
 大模拟真**
